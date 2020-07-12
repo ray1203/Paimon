@@ -12,6 +12,8 @@ public class playerCtrl : MonoBehaviour
     public float jumpPower = 3f;
     public float attackDelay = 1f;
     private float attackTimer = 0f;
+    public float dashDelay = 1f;
+    private float dashTimer = 0f;
     private float invisibleTimer = 0f;
     private bool isInvisible = false;
     public Slider hpSlider;
@@ -57,6 +59,8 @@ public class playerCtrl : MonoBehaviour
         }
         attackTimer += Time.deltaTime;
         if (attackTimer >= 100000) attackTimer = 0f;
+        dashTimer += Time.deltaTime;
+        if (dashTimer >= 100000) dashTimer = 0f;
         if (Input.GetButtonDown("Jump")&&isGround&& attackTimer > 0.5f)
         {
             isJumping = true;
@@ -66,9 +70,9 @@ public class playerCtrl : MonoBehaviour
             attackTimer = 0f;
             Attack();
         }
-        if (Input.GetKeyDown(KeyCode.Space)&&isGround&& attackTimer >0.5f)
+        if (Input.GetKeyDown(KeyCode.Space)&&isGround&& attackTimer >0.5f&&dashTimer>=dashDelay)
         {
-
+            dashTimer = 0f;
             Dash();
         }
     }

@@ -21,6 +21,7 @@ public class enemyCtrl : MonoBehaviour
     public bool isSearch = false;
     public GameObject Target;
     public GameObject attackColider;
+    private bool attacking = false;
     private SpriteRenderer sprite;
     public Slider hpBar;
     public float way0x,way1x;
@@ -42,23 +43,32 @@ public class enemyCtrl : MonoBehaviour
     {
         if (!isDie)
         {
-            if (isSearch == true)
-            { //기존과 탐색 조건을 추가함
-                Attack(); //공격기능		
-                attackTimer += Time.deltaTime;
-                if (attackTimer >= 100f) attackTimer = 10f;
-                way0x = WayPoint0.transform.position.x;
-                way1x = WayPoint1.transform.position.x;
-            }
-            else
+            if (!attacking)
             {
-                animator.SetBool("run", true);
-                WayPointMove(); //패트롤 기능
+                if (isSearch == true)
+                { //기존과 탐색 조건을 추가함
+                    Attack(); //공격기능		
+                    attackTimer += Time.deltaTime;
+                    if (attackTimer >= 100f) attackTimer = 10f;
+                    way0x = WayPoint0.transform.position.x;
+                    way1x = WayPoint1.transform.position.x;
+                }
+                else
+                {
+                    animator.SetBool("idle", false);
+                    animator.SetBool("run", true);
+                    WayPointMove(); //패트롤 기능
+                }
             }
-            if (sprite.sprite.name == "Attack1_2")
+            if (sprite.sprite.name == "Attack1_edit_6")
             {
                 attackColider.SetActive(true);
 
+            }else if (sprite.sprite.name == "Attack1_edit_7")
+            {
+                attacking = false;
+                animator.SetBool("idle", true);
+                animator.SetBool("run", false);
             }
             else
             {
@@ -98,6 +108,7 @@ public class enemyCtrl : MonoBehaviour
             transform.localPosition = Vector2.MoveTowards(transform.position, new Vector2(way1x, this.transform.position.y), MoveSpeed * Time.deltaTime);
             //반전
             this.transform.rotation = Quaternion.Euler(0, 180, 0);
+            hpBar.transform.rotation = Quaternion.Euler(0, 0, 0);
             if (Mathf.Abs(transform.position.x - way1x) <= 0.5f)
                 isWayPoint = true;
         }
@@ -109,6 +120,7 @@ public class enemyCtrl : MonoBehaviour
             //Quaternion.LookRotation(WayPoint0.transform.position - transform.position),1);			
             //이동
             this.transform.rotation = Quaternion.Euler(0, 0, 0);
+            hpBar.transform.rotation = Quaternion.Euler(0, 0, 0);
             transform.localPosition = Vector2.MoveTowards(transform.position, new Vector2(way0x, this.transform.position.y), MoveSpeed * Time.deltaTime);
             //반전
             if (Mathf.Abs(transform.position.x - way0x) <= 0.5f)
@@ -129,10 +141,12 @@ public class enemyCtrl : MonoBehaviour
         if (transform.position.x < Target.transform.position.x)
         {
             this.transform.rotation = Quaternion.Euler(0, 0, 0);
+            hpBar.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         }
         else
             this.transform.rotation = Quaternion.Euler(0, 180, 0);
+        hpBar.transform.rotation = Quaternion.Euler(0, 0, 0);
 
         //
         //돌아보는 방향을 플레이어 쪽으로
@@ -145,6 +159,9 @@ public class enemyCtrl : MonoBehaviour
                 Debug.Log("enemyAtk");
                 attackTimer = 0;
                 animator.SetTrigger("attack");
+                animator.SetBool("run", false);
+                animator.SetBool("idle", false);
+                attacking = true;
 
             }
             else if(distance>=1f)

@@ -1667,6 +1667,7 @@ MonoBehaviour:
   movePower: 3
   jumpPower: 3
   attackDelay: 1
+  dashDelay: 1
   hpSlider: {fileID: 339054358}
   isGround: 0
   attackColider: {fileID: 998665382}
